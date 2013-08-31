@@ -1,0 +1,5 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
+	<t:content>
+		<div id="charts" style="width: 600px; height: 300px; position: relative; cursor: default;"></div>
+	</t:content>
+</html>
