@@ -1,0 +1,13 @@
+<html t:type="layout" title="thermospi Index"
+      t:sidebarTitle="Framework Version"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+
+	<div class="chart" id="temperatureChart"></div>
+	
+	<t:ThermostatStateComponent t:id="lastHour" />
+	<t:ThermostatStateComponent t:id="last24h" />
+	<t:ThermostatStateComponent t:id="lastMonth" />
+	<t:ThermostatStateComponent t:id="lastYear" />
+
+</html>

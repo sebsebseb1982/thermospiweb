@@ -1,0 +1,5 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
+	<t:content>
+		<div class="chart pie" id="${id}"></div>
+	</t:content>
+</html>
