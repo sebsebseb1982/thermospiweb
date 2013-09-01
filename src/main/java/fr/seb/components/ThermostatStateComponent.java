@@ -1,10 +1,15 @@
 package fr.seb.components;
 
+import java.util.List;
+
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 
 import fr.seb.base.HighchartsComponent;
+import fr.seb.entities.ThermostatState;
 
 public class ThermostatStateComponent extends HighchartsComponent {
 
@@ -15,6 +20,9 @@ public class ThermostatStateComponent extends HighchartsComponent {
 	@Parameter(required = true)
 	@Property
 	private String title;
+
+	@Parameter(required = true)
+	private List<ThermostatState> thermostatStates;
 
 	@AfterRender
 	public void afterRender() {
@@ -48,19 +56,9 @@ public class ThermostatStateComponent extends HighchartsComponent {
 		javascript.append("		},");
 		javascript.append("		series: [{");
 		javascript.append("			type: 'pie',");
-		javascript.append("			name: 'Browser share',");
+		javascript.append("			name: 'Répartition chauffage',");
 		javascript.append("			data: [");
-		javascript.append("				['Firefox',   45.0],");
-		javascript.append("				['IE',       26.8],");
-		javascript.append("				{");
-		javascript.append("					name: 'Chrome',");
-		javascript.append("					y: 12.8,");
-		javascript.append("					sliced: true,");
-		javascript.append("					selected: true");
-		javascript.append("				},");
-		javascript.append("				['Safari',    8.5],");
-		javascript.append("				['Opera',     6.2],");
-		javascript.append("				['Others',   0.7]");
+		javascript.append(writeData());
 		javascript.append("			]");
 		javascript.append("		}]");
 		javascript.append("});");
@@ -68,4 +66,55 @@ public class ThermostatStateComponent extends HighchartsComponent {
 		javaScriptSupport.addScript(javascript.toString());
 	}
 
+	private String writeData() {
+
+		float thermostatHighStatePercentage = getThermostatHighStatePercentage();
+
+		StringBuilder data = new StringBuilder();
+
+		data.append("{");
+		data.append("	name: 'Allumé',");
+		data.append("	y: ").append(thermostatHighStatePercentage).append(",");
+		data.append("	sliced: true,");
+		data.append("	color: '#D12A2A',");
+		data.append("	selected: true");
+		data.append("},");
+		data.append("{");
+		data.append("	name: 'Eteint',");
+		data.append("	color: '#3B3EE3',");
+		data.append("	y: ").append(100.0 - thermostatHighStatePercentage).append(",");
+		data.append("}");
+
+		return data.toString();
+	}
+
+	private float getThermostatHighStatePercentage() {
+		Duration highState = new Duration(0);
+		Duration lowState = new Duration(0);
+
+		ThermostatState lastThermostatState = null;
+
+		for (int i = 0; i < thermostatStates.size(); i++) {
+			ThermostatState thermostate = thermostatStates.get(i);
+			if (lastThermostatState != null) {
+				boolean noMoreThermostatState = i == thermostatStates.size() - 1;
+				if (lastThermostatState.isState() != thermostate.isState() || noMoreThermostatState) {
+					Interval interval = new Interval(lastThermostatState.getDate().getTime(), thermostate.getDate().getTime());
+
+					if (lastThermostatState.isState()) {
+						highState = highState.plus(interval.toDurationMillis());
+					} else {
+						lowState = lowState.plus(interval.toDurationMillis());
+					}
+
+					lastThermostatState = thermostate;
+				} else {
+					continue;
+				}
+			} else {
+				lastThermostatState = thermostate;
+			}
+		}
+		return (float) (highState.getMillis() * 100) / (highState.getMillis() + lowState.getMillis());
+	}
 }

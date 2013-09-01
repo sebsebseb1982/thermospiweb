@@ -10,6 +10,7 @@ import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Component;
 import org.apache.tapestry5.annotations.Environmental;
 import org.apache.tapestry5.annotations.Import;
+import org.apache.tapestry5.annotations.Property;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.services.javascript.JavaScriptSupport;
 import org.hibernate.Criteria;
@@ -21,6 +22,7 @@ import fr.seb.data.beans.Chart;
 import fr.seb.entities.Sensor;
 import fr.seb.entities.TemperatureRecord;
 import fr.seb.entities.ThermostatState;
+import fr.seb.services.DataService;
 
 @Import(library = { "context:js/lib/highcharts/prototype-adapter.js", "context:js/lib/highcharts/highcharts.js" }, stylesheet = "context:css/chart.css")
 public class Highcharts {
@@ -32,19 +34,28 @@ public class Highcharts {
 	private Session session;
 
 	@SuppressWarnings("unused")
-	@Component(parameters = { "id=literal:lastHour", "title=message:chart.title.thermostats-state-last-hour" })
+	@Inject
+	@Property
+	private DataService dataService;
+
+	@SuppressWarnings("unused")
+	@Component(parameters = { "id=literal:lastHour", "title=message:chart.title.thermostats-state-last-hour",
+			"thermostatStates=dataService.lastHourThermostatState" })
 	private ThermostatStateComponent lastHour;
 
 	@SuppressWarnings("unused")
-	@Component(parameters = { "id=literal:last24h", "title=message:chart.title.thermostats-state-last-24h" })
+	@Component(parameters = { "id=literal:last24h", "title=message:chart.title.thermostats-state-last-24h",
+			"thermostatStates=dataService.last24hThermostatState" })
 	private ThermostatStateComponent last24h;
 
 	@SuppressWarnings("unused")
-	@Component(parameters = { "id=literal:lastMonth", "title=message:chart.title.thermostats-state-last-month" })
+	@Component(parameters = { "id=literal:lastMonth", "title=message:chart.title.thermostats-state-last-month",
+			"thermostatStates=dataService.lastMonthThermostatState" })
 	private ThermostatStateComponent lastMonth;
 
 	@SuppressWarnings("unused")
-	@Component(parameters = { "id=literal:lastYear", "title=message:chart.title.thermostats-state-last-year" })
+	@Component(parameters = { "id=literal:lastYear", "title=message:chart.title.thermostats-state-last-year",
+			"thermostatStates=dataService.lastYearThermostatState" })
 	private ThermostatStateComponent lastYear;
 
 	@AfterRender
@@ -72,17 +83,55 @@ public class Highcharts {
 		javascript.append("		yAxis: {");
 		javascript.append("			title: {");
 		javascript.append("				 text: 'Température (°C)'");
-		javascript.append("			}");
+		javascript.append("			},");
+		javascript.append("			plotBands: [{");
+		javascript.append("			    from: 24,");
+		javascript.append("			    to: 26,");
+		javascript.append("			    color: 'rgba(50, 50, 50, 0.1)',");
+		javascript.append("			}]");
 		javascript.append("		},");
 		javascript.append("		series: [");
 		for (Sensor sensor : chart.getPlots().keySet()) {
 			javascript.append(writeTemperatureSerie(sensor, chart.getPlots().get(sensor)));
 			javascript.append(",");
 		}
+		javascript.append(writeThermostatStateSerie(chart.getThermostatStates()));
 		javascript.append("		]");
 		javascript.append("});");
 
 		javaScriptSupport.addScript(javascript.toString());
+	}
+
+	private Object writeThermostatStateSerie(LinkedList<ThermostatState> thermostatStates) {
+		StringBuilder javascript = new StringBuilder();
+
+		javascript.append("{");
+		javascript.append("		name: 'Thermostat',");
+		javascript.append("		step: true,");
+		javascript.append("		data: [");
+		for (ThermostatState thermostatState : thermostatStates) {
+			javascript.append("		[Date.UTC(");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(thermostatState.getDate());
+			javascript.append(calendar.get(Calendar.YEAR));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.MONTH));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.DAY_OF_MONTH));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.HOUR_OF_DAY));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.MINUTE));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.SECOND));
+			javascript.append("		),");
+			javascript.append(thermostatState.isState() ? "30" : "10");
+			javascript.append("		],");
+		}
+		javascript.append("		]");
+		javascript.append("}");
+
+		return javascript.toString();
 	}
 
 	private String writeTemperatureSerie(Sensor sensor, LinkedList<TemperatureRecord> temperatures) {
@@ -90,6 +139,14 @@ public class Highcharts {
 
 		javascript.append("{");
 		javascript.append("		name: '").append(sensor.getLabel()).append("',");
+		javascript.append("		marker: {");
+		javascript.append("		    enabled: false,");
+		javascript.append("		    states: {");
+		javascript.append("		        hover: {");
+		javascript.append("		            enabled: true");
+		javascript.append("		        }");
+		javascript.append("		    }");
+		javascript.append("		},");
 		javascript.append("		data: [");
 		for (TemperatureRecord temperatureRecord : temperatures) {
 			javascript.append("		[Date.UTC(");
