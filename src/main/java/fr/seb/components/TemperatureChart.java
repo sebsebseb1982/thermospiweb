@@ -1,6 +1,6 @@
 package fr.seb.components;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Environmental;
@@ -75,7 +75,7 @@ public class TemperatureChart {
 		javaScriptSupport.addScript(javascript.toString());
 	}
 
-	private String computeThermostatStatesString(LinkedList<ThermostatState> thermostatStates) {
+	private String computeThermostatStatesString(List<ThermostatState> thermostatStates) {
 		StringBuilder data = new StringBuilder();
 
 		Boolean lastState = null;
@@ -103,7 +103,7 @@ public class TemperatureChart {
 		return data.toString();
 	}
 
-	private String computeDataString(LinkedList<TemperatureRecord> records) {
+	private String computeDataString(List<TemperatureRecord> records) {
 
 		StringBuilder data = new StringBuilder();
 

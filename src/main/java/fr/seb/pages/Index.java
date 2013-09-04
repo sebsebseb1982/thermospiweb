@@ -1,7 +1,7 @@
 package fr.seb.pages;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class Index {
 		@SuppressWarnings("unchecked")
 		List<TemperatureRecord> temperatureRecords = session.createCriteria(TemperatureRecord.class).list();
 
-		Map<Sensor, LinkedList<TemperatureRecord>> plots = new HashMap<Sensor, LinkedList<TemperatureRecord>>();
+		Map<Sensor, List<TemperatureRecord>> plots = new HashMap<Sensor, List<TemperatureRecord>>();
 
 		for (TemperatureRecord temperatureRecord : temperatureRecords) {
 			Sensor sensor = temperatureRecord.getSensor();
@@ -40,7 +40,7 @@ public class Index {
 			if (plots.containsKey(sensor)) {
 				plots.get(sensor).add(temperatureRecord);
 			} else {
-				LinkedList<TemperatureRecord> temperatureRecordsBySensor = new LinkedList<TemperatureRecord>();
+				List<TemperatureRecord> temperatureRecordsBySensor = new ArrayList<TemperatureRecord>();
 				temperatureRecordsBySensor.add(temperatureRecord);
 				plots.put(sensor, temperatureRecordsBySensor);
 			}
@@ -51,7 +51,7 @@ public class Index {
 		@SuppressWarnings("unchecked")
 		List<ThermostatState> thermostatStates = session.createCriteria(ThermostatState.class).list();
 
-		chart.setThermostatStates(new LinkedList<ThermostatState>(thermostatStates));
+		chart.setThermostatStates(new ArrayList<ThermostatState>(thermostatStates));
 
 		return chart;
 	}

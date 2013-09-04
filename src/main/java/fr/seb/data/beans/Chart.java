@@ -1,6 +1,6 @@
 package fr.seb.data.beans;
 
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import fr.seb.entities.Sensor;
@@ -8,23 +8,23 @@ import fr.seb.entities.TemperatureRecord;
 import fr.seb.entities.ThermostatState;
 
 public class Chart {
-	private Map<Sensor, LinkedList<TemperatureRecord>> plots;
+	private Map<Sensor, List<TemperatureRecord>> plots;
 
-	private LinkedList<ThermostatState> thermostatStates;
+	private List<ThermostatState> thermostatStates;
 
-	public Map<Sensor, LinkedList<TemperatureRecord>> getPlots() {
+	public Map<Sensor, List<TemperatureRecord>> getPlots() {
 		return plots;
 	}
 
-	public void setPlots(Map<Sensor, LinkedList<TemperatureRecord>> plots) {
+	public void setPlots(Map<Sensor, List<TemperatureRecord>> plots) {
 		this.plots = plots;
 	}
 
-	public LinkedList<ThermostatState> getThermostatStates() {
+	public List<ThermostatState> getThermostatStates() {
 		return thermostatStates;
 	}
 
-	public void setThermostatStates(LinkedList<ThermostatState> thermostatStates) {
+	public void setThermostatStates(List<ThermostatState> thermostatStates) {
 		this.thermostatStates = thermostatStates;
 	}
 }

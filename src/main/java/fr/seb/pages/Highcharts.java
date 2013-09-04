@@ -1,8 +1,8 @@
 package fr.seb.pages;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +33,6 @@ public class Highcharts {
 	@Inject
 	private Session session;
 
-	@SuppressWarnings("unused")
 	@Inject
 	@Property
 	private DataService dataService;
@@ -102,7 +101,7 @@ public class Highcharts {
 		javaScriptSupport.addScript(javascript.toString());
 	}
 
-	private Object writeThermostatStateSerie(LinkedList<ThermostatState> thermostatStates) {
+	private Object writeThermostatStateSerie(List<ThermostatState> thermostatStates) {
 		StringBuilder javascript = new StringBuilder();
 
 		javascript.append("{");
@@ -134,7 +133,7 @@ public class Highcharts {
 		return javascript.toString();
 	}
 
-	private String writeTemperatureSerie(Sensor sensor, LinkedList<TemperatureRecord> temperatures) {
+	private String writeTemperatureSerie(Sensor sensor, List<TemperatureRecord> temperatures) {
 		StringBuilder javascript = new StringBuilder();
 
 		javascript.append("{");
@@ -181,7 +180,7 @@ public class Highcharts {
 		@SuppressWarnings("unchecked")
 		List<TemperatureRecord> temperatureRecords = createCriteria.list();
 
-		Map<Sensor, LinkedList<TemperatureRecord>> plots = new HashMap<Sensor, LinkedList<TemperatureRecord>>();
+		Map<Sensor, List<TemperatureRecord>> plots = new HashMap<Sensor, List<TemperatureRecord>>();
 
 		for (TemperatureRecord temperatureRecord : temperatureRecords) {
 			Sensor sensor = temperatureRecord.getSensor();
@@ -189,7 +188,7 @@ public class Highcharts {
 			if (plots.containsKey(sensor)) {
 				plots.get(sensor).add(temperatureRecord);
 			} else {
-				LinkedList<TemperatureRecord> temperatureRecordsBySensor = new LinkedList<TemperatureRecord>();
+				List<TemperatureRecord> temperatureRecordsBySensor = new ArrayList<TemperatureRecord>();
 				temperatureRecordsBySensor.add(temperatureRecord);
 				plots.put(sensor, temperatureRecordsBySensor);
 			}
@@ -197,10 +196,7 @@ public class Highcharts {
 
 		chart.setPlots(plots);
 
-		@SuppressWarnings("unchecked")
-		List<ThermostatState> thermostatStates = session.createCriteria(ThermostatState.class).list();
-
-		chart.setThermostatStates(new LinkedList<ThermostatState>(thermostatStates));
+		chart.setThermostatStates(dataService.getLast24hThermostatState());
 
 		return chart;
 	}
