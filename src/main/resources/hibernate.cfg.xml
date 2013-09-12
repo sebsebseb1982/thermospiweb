@@ -13,15 +13,19 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
     	 -->
-    	 
+<!--    	 
 	    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 	    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-	    <property name="hibernate.connection.url">jdbc:mysql://192.168.1.50:3306/temperatures?autoReconnect=true</property>
+	    <property name="hibernate.connection.url">jdbc:mysql://192.168.1.50:3306/temperatures</property>
 	    <property name="hibernate.connection.username">seb</property>
 	    <property name="hibernate.connection.password">seb</property>
 	    
 	    <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.format_sql">true</property>
+            <property name="hibernate.format_sql">true</property>
+-->
+
+<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+<property name="connection.datasource">jdbc/DsTemp</property>
 	    
 	    <!-- Drop and re-create the database schema on startup -->
 	    <!-- 
