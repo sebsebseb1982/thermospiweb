@@ -13,6 +13,8 @@ import org.apache.tapestry5.services.RequestHandler;
 import org.apache.tapestry5.services.Response;
 import org.slf4j.Logger;
 
+import fr.seb.data.coordination.CoordinationTemperatures;
+import fr.seb.data.coordination.impl.CoordinationTemperaturesImpl;
 import fr.seb.services.impl.DataServiceImpl;
 
 /**
@@ -25,6 +27,7 @@ public class AppModule {
 		// binder.bind(MyServiceInterface.class, MyServiceImpl.class);
 
 		binder.bind(DataService.class, DataServiceImpl.class);
+		binder.bind(CoordinationTemperatures.class, CoordinationTemperaturesImpl.class);
 
 		// Make bind() calls on the binder object to define most IoC services.
 		// Use service builder methods (example below) when the implementation

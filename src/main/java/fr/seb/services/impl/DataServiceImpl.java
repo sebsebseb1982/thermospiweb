@@ -1,6 +1,7 @@
 package fr.seb.services.impl;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import fr.seb.data.beans.HeatingSetPoint;
+import fr.seb.entities.Constant;
+import fr.seb.entities.TemperatureRecord;
 import fr.seb.entities.ThermostatState;
 import fr.seb.services.DataService;
 
@@ -18,7 +22,7 @@ public class DataServiceImpl implements DataService {
 	@Inject
 	private Session session;
 
-	public List<ThermostatState> getLastThermostatState(int lastUnit, int lastAmount) {
+	public Collection<ThermostatState> getLastThermostatState(int lastUnit, int lastAmount) {
 		Date now = new Date();
 
 		Calendar calendar = Calendar.getInstance();
@@ -55,20 +59,42 @@ public class DataServiceImpl implements DataService {
 		return thermostatStates;
 	}
 
-	public List<ThermostatState> getLastHourThermostatState() {
+	public Collection<ThermostatState> getLastHourThermostatState() {
 		return getLastThermostatState(Calendar.HOUR_OF_DAY, 1);
 	}
 
-	public List<ThermostatState> getLast24hThermostatState() {
+	public Collection<ThermostatState> getLast24hThermostatState() {
 		return getLastThermostatState(Calendar.DAY_OF_YEAR, 1);
 	}
 
-	public List<ThermostatState> getLastMonthThermostatState() {
+	public Collection<ThermostatState> getLastMonthThermostatState() {
 		return getLastThermostatState(Calendar.MONTH, 1);
 	}
 
-	public List<ThermostatState> getLastYearThermostatState() {
+	public Collection<ThermostatState> getLastYearThermostatState() {
 		return getLastThermostatState(Calendar.YEAR, 1);
 	}
 
+	public Collection<TemperatureRecord> getLastTemperatures(int lastUnit, int lastAmount) {
+		Date now = new Date();
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(now);
+		calendar.add(lastUnit, lastAmount * -1);
+		Criteria createCriteria = session.createCriteria(TemperatureRecord.class).add(Restrictions.gt("date", calendar.getTime())).addOrder(Order.asc("date"));
+		@SuppressWarnings("unchecked")
+		List<TemperatureRecord> temperatureRecord = createCriteria.list();
+		return temperatureRecord;
+	}
+
+	public HeatingSetPoint getHeatingSetPoint() {
+		float consigne = Float.parseFloat(getConstant("consigne").getValue());
+		float hysteresis = Float.parseFloat(getConstant("hysteresis").getValue());
+
+		return new HeatingSetPoint(consigne, hysteresis);
+	}
+
+	private Constant getConstant(String name) {
+		return (Constant) session.createCriteria(Constant.class).add(Restrictions.eq("name", name)).list().get(0);
+	}
 }

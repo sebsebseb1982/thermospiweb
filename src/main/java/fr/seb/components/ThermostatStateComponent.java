@@ -3,6 +3,7 @@ package fr.seb.components;
 import java.util.List;
 
 import org.apache.tapestry5.annotations.AfterRender;
+import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
 import org.joda.time.Duration;
@@ -11,6 +12,7 @@ import org.joda.time.Interval;
 import fr.seb.base.HighchartsComponent;
 import fr.seb.entities.ThermostatState;
 
+@Import(library = { "context:js/lib/highcharts/prototype-adapter.js", "context:js/lib/highcharts/highcharts.js" }, stylesheet = "context:css/chart.css")
 public class ThermostatStateComponent extends HighchartsComponent {
 
 	@Parameter(required = true)

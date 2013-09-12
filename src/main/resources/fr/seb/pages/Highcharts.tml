@@ -3,11 +3,25 @@
       xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
       xmlns:p="tapestry:parameter">
 
-	<div class="chart" id="temperatureChart"></div>
-	
-	<t:ThermostatStateComponent t:id="lastHour" />
-	<t:ThermostatStateComponent t:id="last24h" />
-	<t:ThermostatStateComponent t:id="lastMonth" />
-	<t:ThermostatStateComponent t:id="lastYear" />
+	<div class="line">
+		<t:zone t:id="temperatureZone" id="temperatureZone">
+			<t:TemperatureChart t:id="temperatureChart" />
+		</t:zone>
 
+		<ul class="choose-period">
+			<li><t:actionlink t:id="oneDay" zone="temperatureZone">1 jour</t:actionlink>
+			</li>
+			<li><t:actionlink t:id="threeDays" zone="temperatureZone">3 jours</t:actionlink>
+			</li>
+			<li><t:actionlink t:id="fiveDays" zone="temperatureZone">5 jours</t:actionlink>
+			</li>
+		</ul>
+
+</div>
+	
+	<div class="line">
+		<t:ThermostatStateComponent t:id="last24h" />
+		<t:ThermostatStateComponent t:id="lastMonth" />
+		<t:ThermostatStateComponent t:id="lastYear" />
+	</div>
 </html>
