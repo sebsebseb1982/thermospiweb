@@ -1,7 +1,6 @@
 package fr.seb.components;
 
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.tapestry5.annotations.AfterRender;
@@ -15,7 +14,6 @@ import fr.seb.data.beans.Chart;
 import fr.seb.data.beans.HeatingSetPoint;
 import fr.seb.entities.Sensor;
 import fr.seb.entities.TemperatureRecord;
-import fr.seb.entities.ThermostatState;
 
 @Import(library = { "context:js/lib/highcharts/prototype-adapter.js", "context:js/lib/highcharts/highcharts.js" }, stylesheet = "context:css/chart.css")
 public class TemperatureChart {
@@ -83,7 +81,7 @@ public class TemperatureChart {
 			javascript.append(writeTemperatureSerie(sensor, chart.getPlots().get(sensor)));
 			javascript.append(",");
 		}
-		javascript.append(writeThermostatStateSerie(chart.getThermostatStates()));
+		// javascript.append(writeThermostatStateSerie(chart.getThermostatStates()));
 		javascript.append("		]");
 		javascript.append("});");
 
@@ -143,35 +141,36 @@ public class TemperatureChart {
 		return javascript.toString();
 	}
 
-	private Object writeThermostatStateSerie(Collection<ThermostatState> thermostatStates) {
-		StringBuilder javascript = new StringBuilder();
-
-		javascript.append("{");
-		javascript.append("		name: 'Thermostat',");
-		javascript.append("		step: true,");
-		javascript.append("		data: [");
-		for (ThermostatState thermostatState : thermostatStates) {
-			javascript.append("		[Date.UTC(");
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(thermostatState.getDate());
-			javascript.append(calendar.get(Calendar.YEAR));
-			javascript.append("		,");
-			javascript.append(calendar.get(Calendar.MONTH));
-			javascript.append("		,");
-			javascript.append(calendar.get(Calendar.DAY_OF_MONTH));
-			javascript.append("		,");
-			javascript.append(calendar.get(Calendar.HOUR_OF_DAY));
-			javascript.append("		,");
-			javascript.append(calendar.get(Calendar.MINUTE));
-			javascript.append("		,");
-			javascript.append(calendar.get(Calendar.SECOND));
-			javascript.append("		),");
-			javascript.append(thermostatState.isState() ? "30" : "10");
-			javascript.append("		],");
-		}
-		javascript.append("		]");
-		javascript.append("}");
-
-		return javascript.toString();
-	}
+	// private Object writeThermostatStateSerie(Collection<ThermostatSetPoint>
+	// thermostatStates) {
+	// StringBuilder javascript = new StringBuilder();
+	//
+	// javascript.append("{");
+	// javascript.append("		name: 'Thermostat',");
+	// javascript.append("		step: true,");
+	// javascript.append("		data: [");
+	// for (ThermostatSetPoint thermostatState : thermostatStates) {
+	// javascript.append("		[Date.UTC(");
+	// Calendar calendar = Calendar.getInstance();
+	// calendar.setTime(thermostatState.getDate());
+	// javascript.append(calendar.get(Calendar.YEAR));
+	// javascript.append("		,");
+	// javascript.append(calendar.get(Calendar.MONTH));
+	// javascript.append("		,");
+	// javascript.append(calendar.get(Calendar.DAY_OF_MONTH));
+	// javascript.append("		,");
+	// javascript.append(calendar.get(Calendar.HOUR_OF_DAY));
+	// javascript.append("		,");
+	// javascript.append(calendar.get(Calendar.MINUTE));
+	// javascript.append("		,");
+	// javascript.append(calendar.get(Calendar.SECOND));
+	// javascript.append("		),");
+	// javascript.append(thermostatState.isState() ? "30" : "10");
+	// javascript.append("		],");
+	// }
+	// javascript.append("		]");
+	// javascript.append("}");
+	//
+	// return javascript.toString();
+	// }
 }

@@ -6,12 +6,12 @@ import java.util.Map;
 
 import fr.seb.entities.Sensor;
 import fr.seb.entities.TemperatureRecord;
-import fr.seb.entities.ThermostatState;
+import fr.seb.entities.ThermostatSetPoint;
 
 public class Chart {
 	private Map<Sensor, List<TemperatureRecord>> plots;
 
-	private Collection<ThermostatState> thermostatStates;
+	private Collection<ThermostatSetPoint> thermostatStates;
 
 	public Map<Sensor, List<TemperatureRecord>> getPlots() {
 		return plots;
@@ -21,11 +21,11 @@ public class Chart {
 		this.plots = plots;
 	}
 
-	public Collection<ThermostatState> getThermostatStates() {
+	public Collection<ThermostatSetPoint> getThermostatStates() {
 		return thermostatStates;
 	}
 
-	public void setThermostatStates(Collection<ThermostatState> thermostatStates) {
+	public void setThermostatStates(Collection<ThermostatSetPoint> thermostatStates) {
 		this.thermostatStates = thermostatStates;
 	}
 }

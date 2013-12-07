@@ -6,11 +6,9 @@ import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.Import;
 import org.apache.tapestry5.annotations.Parameter;
 import org.apache.tapestry5.annotations.Property;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
 
 import fr.seb.base.HighchartsComponent;
-import fr.seb.entities.ThermostatState;
+import fr.seb.entities.ThermostatSetPoint;
 
 @Import(library = { "context:js/lib/highcharts/prototype-adapter.js", "context:js/lib/highcharts/highcharts.js" }, stylesheet = "context:css/chart.css")
 public class ThermostatStateComponent extends HighchartsComponent {
@@ -24,7 +22,7 @@ public class ThermostatStateComponent extends HighchartsComponent {
 	private String title;
 
 	@Parameter(required = true)
-	private List<ThermostatState> thermostatStates;
+	private List<ThermostatSetPoint> thermostatStates;
 
 	@AfterRender
 	public void afterRender() {
@@ -70,7 +68,10 @@ public class ThermostatStateComponent extends HighchartsComponent {
 
 	private String writeData() {
 
-		float thermostatHighStatePercentage = getThermostatHighStatePercentage();
+		float thermostatHighStatePercentage = 0/*
+												 * getThermostatHighStatePercentage(
+												 * )
+												 */;
 
 		StringBuilder data = new StringBuilder();
 
@@ -90,33 +91,36 @@ public class ThermostatStateComponent extends HighchartsComponent {
 		return data.toString();
 	}
 
-	private float getThermostatHighStatePercentage() {
-		Duration highState = new Duration(0);
-		Duration lowState = new Duration(0);
-
-		ThermostatState lastThermostatState = null;
-
-		for (int i = 0; i < thermostatStates.size(); i++) {
-			ThermostatState thermostate = thermostatStates.get(i);
-			if (lastThermostatState != null) {
-				boolean noMoreThermostatState = i == thermostatStates.size() - 1;
-				if (lastThermostatState.isState() != thermostate.isState() || noMoreThermostatState) {
-					Interval interval = new Interval(lastThermostatState.getDate().getTime(), thermostate.getDate().getTime());
-
-					if (lastThermostatState.isState()) {
-						highState = highState.plus(interval.toDurationMillis());
-					} else {
-						lowState = lowState.plus(interval.toDurationMillis());
-					}
-
-					lastThermostatState = thermostate;
-				} else {
-					continue;
-				}
-			} else {
-				lastThermostatState = thermostate;
-			}
-		}
-		return (float) (highState.getMillis() * 100) / (highState.getMillis() + lowState.getMillis());
-	}
+	// private float getThermostatHighStatePercentage() {
+	// Duration highState = new Duration(0);
+	// Duration lowState = new Duration(0);
+	//
+	// ThermostatSetPoint lastThermostatState = null;
+	//
+	// for (int i = 0; i < thermostatStates.size(); i++) {
+	// ThermostatSetPoint thermostate = thermostatStates.get(i);
+	// if (lastThermostatState != null) {
+	// boolean noMoreThermostatState = i == thermostatStates.size() - 1;
+	// if (lastThermostatState.isState() != thermostate.isState() ||
+	// noMoreThermostatState) {
+	// Interval interval = new Interval(lastThermostatState.getDate().getTime(),
+	// thermostate.getDate().getTime());
+	//
+	// if (lastThermostatState.isState()) {
+	// highState = highState.plus(interval.toDurationMillis());
+	// } else {
+	// lowState = lowState.plus(interval.toDurationMillis());
+	// }
+	//
+	// lastThermostatState = thermostate;
+	// } else {
+	// continue;
+	// }
+	// } else {
+	// lastThermostatState = thermostate;
+	// }
+	// }
+	// return (float) (highState.getMillis() * 100) / (highState.getMillis() +
+	// lowState.getMillis());
+	// }
 }

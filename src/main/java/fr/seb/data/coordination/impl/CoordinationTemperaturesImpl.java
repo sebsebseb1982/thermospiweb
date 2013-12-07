@@ -10,11 +10,10 @@ import fr.seb.data.beans.Chart;
 import fr.seb.data.coordination.CoordinationTemperatures;
 import fr.seb.entities.Sensor;
 import fr.seb.entities.TemperatureRecord;
-import fr.seb.entities.ThermostatState;
 
 public class CoordinationTemperaturesImpl implements CoordinationTemperatures {
 
-	public Chart getChartFromTemperature(Collection<TemperatureRecord> temperatures, Collection<ThermostatState> thermostatStates) {
+	public Chart getChartFromTemperature(Collection<TemperatureRecord> temperatures) {
 
 		Chart chart = new Chart();
 
@@ -34,7 +33,7 @@ public class CoordinationTemperaturesImpl implements CoordinationTemperatures {
 
 		chart.setPlots(plots);
 
-		chart.setThermostatStates(thermostatStates);
+		// chart.setThermostatStates(thermostatStates);
 
 		return chart;
 	}

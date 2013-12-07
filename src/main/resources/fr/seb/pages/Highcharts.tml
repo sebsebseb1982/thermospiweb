@@ -18,10 +18,11 @@
 		</ul>
 
 </div>
-	
+	<!-- 
 	<div class="line">
 		<t:ThermostatStateComponent t:id="last24h" />
 		<t:ThermostatStateComponent t:id="lastMonth" />
 		<t:ThermostatStateComponent t:id="lastYear" />
 	</div>
+	 -->
 </html>

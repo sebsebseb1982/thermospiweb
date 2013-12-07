@@ -1,22 +1,32 @@
 package fr.seb.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "constants")
-public class Constant {
+@Entity(name = "setpoints")
+public class ThermostatSetPoint {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
-	@Column(name = "name")
-	private String name;
+	@Column(name = "date")
+	private Date date;
 
 	@Column(name = "value")
-	private String value;
+	private float value;
+
+	public float getValue() {
+		return value;
+	}
+
+	public void setValue(float value) {
+		this.value = value;
+	}
 
 	public int getId() {
 		return id;
@@ -26,19 +36,12 @@ public class Constant {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public Date getDate() {
+		return date;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
 }

@@ -13,7 +13,7 @@ import fr.seb.components.TemperatureChart;
 import fr.seb.data.beans.Chart;
 import fr.seb.entities.Sensor;
 import fr.seb.entities.TemperatureRecord;
-import fr.seb.entities.ThermostatState;
+import fr.seb.entities.ThermostatSetPoint;
 
 /**
  * Start page of application thermospi.
@@ -49,9 +49,9 @@ public class Index {
 		chart.setPlots(plots);
 
 		@SuppressWarnings("unchecked")
-		List<ThermostatState> thermostatStates = session.createCriteria(ThermostatState.class).list();
+		List<ThermostatSetPoint> thermostatStates = session.createCriteria(ThermostatSetPoint.class).list();
 
-		chart.setThermostatStates(new ArrayList<ThermostatState>(thermostatStates));
+		chart.setThermostatStates(new ArrayList<ThermostatSetPoint>(thermostatStates));
 
 		return chart;
 	}

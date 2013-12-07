@@ -8,14 +8,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "states")
-public class ThermostatState {
+@Entity(name = "status")
+public class ThermostatStatus {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
 	@Column(name = "date")
 	private Date date;
+
+	@Column(name = "status")
+	private boolean status;
+
+	@Column(name = "priority")
+	private int priority;
 
 	public int getId() {
 		return id;
@@ -33,14 +39,19 @@ public class ThermostatState {
 		this.date = date;
 	}
 
-	public boolean isState() {
-		return state;
+	public boolean isStatus() {
+		return status;
 	}
 
-	public void setState(boolean state) {
-		this.state = state;
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 
-	@Column(name = "state")
-	private boolean state;
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
 }
