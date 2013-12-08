@@ -1,0 +1,17 @@
+#actuellement span {
+	position: absolute;
+	font-size: 1.5em;
+}
+#actuellement .interieur {
+	left: 55px;
+}
+#actuellement .interieur.etage {
+	top: 128px;
+}
+#actuellement .interieur.rdc {
+	top: 169px;
+}
+#actuellement .exterieur {
+	left: 163px;
+	top: 169px;
+}

@@ -1,0 +1,13 @@
+<html xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
+	<t:content>
+		<div id="actuellement" class="col-md-4">
+			<h2>Actuellement</h2>
+			<p>
+				<img src="${context:img/maison.png}"/>
+				<span class="interieur etage">${temperatureActuelleEtage}</span>
+				<span class="interieur rdc">${temperatureActuelleRDC}</span>
+				<span class="exterieur">${temperatureActuelleExterieur}</span>
+			</p>
+		</div>
+	</t:content>
+</html>

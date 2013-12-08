@@ -15,6 +15,7 @@ import fr.seb.components.TemperatureChart;
 import fr.seb.data.beans.Chart;
 import fr.seb.data.coordination.CoordinationTemperatures;
 import fr.seb.entities.TemperatureRecord;
+import fr.seb.entities.ThermostatSetPoint;
 import fr.seb.services.DataService;
 
 @Import(stylesheet = "context:css/thermospiweb.css")
@@ -50,27 +51,10 @@ public class Highcharts {
 	@Component(parameters = { "id=literal:temperatureChart", "title=message:chart.title.temperatures", "chart=temperatureChart" })
 	private TemperatureChart temperatureChart;
 
-	// @SuppressWarnings("unused")
-	// @Component(parameters = { "id=literal:last24h",
-	// "title=message:chart.title.thermostats-state-last-24h",
-	// "thermostatStates=dataService.last24hThermostatState" })
-	// private ThermostatStateComponent last24h;
-	//
-	// @SuppressWarnings("unused")
-	// @Component(parameters = { "id=literal:lastMonth",
-	// "title=message:chart.title.thermostats-state-last-month",
-	// "thermostatStates=dataService.lastMonthThermostatState" })
-	// private ThermostatStateComponent lastMonth;
-	//
-	// @SuppressWarnings("unused")
-	// @Component(parameters = { "id=literal:lastYear",
-	// "title=message:chart.title.thermostats-state-last-year",
-	// "thermostatStates=dataService.lastYearThermostatState" })
-	// private ThermostatStateComponent lastYear;
-
 	public Chart getTemperatureChart() {
 		Collection<TemperatureRecord> temperatures = dataService.getLastTemperatures(lastUnit, lastAmount);
-		return coordinationTemperatures.getChartFromTemperature(temperatures);
+		Collection<ThermostatSetPoint> thermostatSetPoint = dataService.getLastThermostatState(lastUnit, lastAmount);
+		return coordinationTemperatures.getChartFromTemperature(temperatures, thermostatSetPoint);
 	}
 
 	Object onActionFromOneDay() {
