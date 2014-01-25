@@ -10,6 +10,12 @@
 		<t:zone t:id="temperatureZone" id="temperatureZone">
 			<t:TemperatureChart t:id="temperatureChart" />
 		</t:zone>
+		
+		<div class="btn-group">
+		  <t:actionlink class="btn btn-default" t:id="oneDay" zone="temperatureZone">1 jour</t:actionlink>
+		  <t:actionlink class="btn btn-default" t:id="threeDays" zone="temperatureZone">3 jours</t:actionlink>
+		  <t:actionlink class="btn btn-default" t:id="fiveDays" zone="temperatureZone">5 jours</t:actionlink>
+		</div>
 	</div>
 </div>
 
@@ -23,14 +29,6 @@
 				ut fermentum massa justo sit amet risus. Etiam porta sem malesuada
 				magna mollis euismod. Donec sed odio dui.</p>
 			<p>
-					<ul class="choose-period">
-			<li><t:actionlink t:id="oneDay" zone="temperatureZone">1 jour</t:actionlink>
-			</li>
-			<li><t:actionlink t:id="threeDays" zone="temperatureZone">3 jours</t:actionlink>
-			</li>
-			<li><t:actionlink t:id="fiveDays" zone="temperatureZone">5 jours</t:actionlink>
-			</li>
-		</ul>
 				<a class="btn btn-default" href="#" role="button">View details
 					&raquo;</a>
 			</p>

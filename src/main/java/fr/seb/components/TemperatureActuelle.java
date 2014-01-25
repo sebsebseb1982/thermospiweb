@@ -30,7 +30,7 @@ public class TemperatureActuelle {
 
 	private String afficheTemperature(TemperatureRecord temperatureActuelle) {
 		BigDecimal value = BigDecimal.valueOf(temperatureActuelle.getValue()).setScale(1, RoundingMode.HALF_UP);
-		return value + "°C";
+		return value + "\u00B0C";
 	}
 
 }

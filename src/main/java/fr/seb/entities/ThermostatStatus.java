@@ -8,8 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import fr.seb.interfaces.Printable;
+
 @Entity(name = "status")
-public class ThermostatStatus {
+public class ThermostatStatus implements Comparable<ThermostatStatus>, Printable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
@@ -53,5 +55,17 @@ public class ThermostatStatus {
 
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+
+	public int compareTo(ThermostatStatus o) {
+		return o.getDate().compareTo(getDate());
+	}
+
+	public String print() {
+		StringBuilder result = new StringBuilder();
+
+		result.append(date).append('|').append(getPriority()).append('|').append(isStatus());
+
+		return result.toString();
 	}
 }

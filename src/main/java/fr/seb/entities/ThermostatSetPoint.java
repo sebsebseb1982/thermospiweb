@@ -8,8 +8,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import fr.seb.interfaces.Printable;
+
 @Entity(name = "setpoints")
-public class ThermostatSetPoint {
+public class ThermostatSetPoint implements Printable, Comparable<ThermostatSetPoint> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
@@ -42,6 +44,18 @@ public class ThermostatSetPoint {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String print() {
+		StringBuilder result = new StringBuilder();
+
+		result.append(date).append('|').append(getValue());
+
+		return result.toString();
+	}
+
+	public int compareTo(ThermostatSetPoint thermostatSetPoint) {
+		return getDate().compareTo(thermostatSetPoint.getDate());
 	}
 
 }
