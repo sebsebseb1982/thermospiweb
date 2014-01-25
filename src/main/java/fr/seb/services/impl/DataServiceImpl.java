@@ -123,12 +123,6 @@ public class DataServiceImpl implements DataService {
 	@SuppressWarnings("unchecked")
 	private List<ThermostatSetPoint> getEffectiveThermostatSetPoint(List<ThermostatSetPoint> thermostatSetPoints, List<ThermostatStatus> thermostatStatuses) {
 
-		titre("getEffectiveThermostatSetPoint : start");
-
-		for (ThermostatSetPoint thermostatSetPoint : thermostatSetPoints) {
-			System.out.println(thermostatSetPoint.print());
-		}
-
 		List<ThermostatSetPoint> thermostatSetPointToRemove = new ArrayList<ThermostatSetPoint>();
 		List<ThermostatSetPoint> thermostatSetPointFakeBoundariesToAdd = new ArrayList<ThermostatSetPoint>();
 
@@ -139,42 +133,32 @@ public class DataServiceImpl implements DataService {
 			// priorité inférieure
 			if (thermostatStatus.isStatus()) {
 				// Si nous avons déja rencontré une descente
-				System.out.println("Etat Haut : " + thermostatStatus.print());
 				if (previousLowSignal != null) {
-					System.out.println("Between " + previousLowSignal.getDate() + " -> " + thermostatStatus.getDate());
 
 					Predicate predicate = new fr.seb.predicates.setpoints.BetweenTwoDates(previousLowSignal.getDate(), thermostatStatus.getDate());
 					List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
 
-					System.out.println("<-------------------------------------------------------");
-					for (ThermostatSetPoint thermostatSetPoint : select) {
-						System.out.println(thermostatSetPoint.print());
-					}
-					System.out.println("------------------------------------------------------->\n");
+					ThermostatSetPoint startBoundaries = new ThermostatSetPoint();
+					startBoundaries.setDate(previousLowSignal.getDate());
+					startBoundaries.setValue(0);
+					thermostatSetPointFakeBoundariesToAdd.add(startBoundaries);
 
 					if (!select.isEmpty()) {
-						ThermostatSetPoint startBoundaries = new ThermostatSetPoint();
-						startBoundaries.setDate(previousLowSignal.getDate());
-						startBoundaries.setValue(0);
-						thermostatSetPointFakeBoundariesToAdd.add(startBoundaries);
-
 						ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
 						endBoundaries.setDate(thermostatStatus.getDate());
 						endBoundaries.setValue(select.get(select.size() - 1).getValue());
+						thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
+					} else {
+						ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
+						endBoundaries.setDate(thermostatStatus.getDate());
+						endBoundaries.setValue(getPreviousThermostatSetPoint(thermostatSetPoints, previousLowSignal.getDate()).getValue());
 						thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
 					}
 
 					thermostatSetPointToRemove.addAll(select);
 				} else {
-					// System.out.println("Before " +
-					// thermostatStatus.getDate());
 					Predicate predicate = new fr.seb.predicates.setpoints.BeforeDate(thermostatStatus.getDate());
 					List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
-					// System.out.println("<-------------------------------------------------------");
-					// for (ThermostatSetPoint thermostatSetPoint : select) {
-					// System.out.println(thermostatSetPoint.print());
-					// }
-					// System.out.println("------------------------------------------------------->");
 
 					if (!select.isEmpty()) {
 						ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
@@ -221,23 +205,27 @@ public class DataServiceImpl implements DataService {
 
 		Collections.sort(thermostatSetPoints);
 
-		titre("getEffectiveThermostatSetPoint : end");
+		return thermostatSetPoints;
+	}
+
+	private ThermostatSetPoint getPreviousThermostatSetPoint(List<ThermostatSetPoint> thermostatSetPoints, Date date) {
+		Collections.sort(thermostatSetPoints);
+
+		ThermostatSetPoint previousThermostatSetPoint = null;
 
 		for (ThermostatSetPoint thermostatSetPoint : thermostatSetPoints) {
-			System.out.println(thermostatSetPoint.print());
+			if (thermostatSetPoint.getDate().before(date)) {
+				previousThermostatSetPoint = thermostatSetPoint;
+			} else {
+				break;
+			}
 		}
 
-		return thermostatSetPoints;
+		return previousThermostatSetPoint;
 	}
 
 	@SuppressWarnings("unchecked")
 	private List<ThermostatStatus> getEffectiveThermostatStatus(List<ThermostatStatus> thermostatStatuses) {
-
-		titre("getEffectiveThermostatStatus : start");
-
-		for (ThermostatStatus thermostatStatus : thermostatStatuses) {
-			System.out.println(thermostatStatus.print());
-		}
 
 		List<ThermostatStatus> thermostatStatusesToRemove = new ArrayList<ThermostatStatus>();
 
@@ -278,12 +266,6 @@ public class DataServiceImpl implements DataService {
 		}
 
 		thermostatStatuses.removeAll(thermostatStatusesToRemove);
-
-		titre("getEffectiveThermostatStatus : end");
-
-		for (ThermostatStatus thermostatStatus : thermostatStatuses) {
-			System.out.println(thermostatStatus.print());
-		}
 
 		return thermostatStatuses;
 	}
