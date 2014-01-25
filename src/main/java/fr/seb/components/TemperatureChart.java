@@ -83,7 +83,9 @@ public class TemperatureChart {
 			javascript.append(writeTemperatureSerie(sensor, chart.getPlots().get(sensor)));
 			javascript.append(",");
 		}
-		javascript.append(writeThermostatStateSerie(chart.getThermostatStates()));
+		javascript.append(writeThermostatSetPointSerie(chart.getThermostatSetPoints()));
+		javascript.append(",");
+		javascript.append(writeThermostatHeatingSerie(chart.getThermostatHeating()));
 		javascript.append("		]");
 		javascript.append("});");
 
@@ -143,12 +145,49 @@ public class TemperatureChart {
 		return javascript.toString();
 	}
 
-	private Object writeThermostatStateSerie(Collection<ThermostatSetPoint> thermostatStates) {
+	private Object writeThermostatHeatingSerie(Collection<ThermostatSetPoint> thermostatStates) {
 		StringBuilder javascript = new StringBuilder();
 
 		javascript.append("{");
-		javascript.append("		name: 'Thermostat',");
+		javascript.append("		name: 'Chauffage',");
 		javascript.append("		step: true,");
+		javascript.append("		lineWidth:0,");
+		javascript.append("		color:'#FF4040',");
+		javascript.append("		type: 'area',");
+		javascript.append("		data: [");
+		for (ThermostatSetPoint thermostatState : thermostatStates) {
+			javascript.append("		[Date.UTC(");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(thermostatState.getDate());
+			javascript.append(calendar.get(Calendar.YEAR));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.MONTH));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.DAY_OF_MONTH));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.HOUR_OF_DAY));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.MINUTE));
+			javascript.append("		,");
+			javascript.append(calendar.get(Calendar.SECOND));
+			javascript.append("		),");
+			javascript.append(thermostatState.getValue());
+			javascript.append("		],");
+		}
+		javascript.append("		]");
+		javascript.append("}");
+
+		return javascript.toString();
+	}
+
+	private Object writeThermostatSetPointSerie(Collection<ThermostatSetPoint> thermostatStates) {
+		StringBuilder javascript = new StringBuilder();
+
+		javascript.append("{");
+		javascript.append("		name: 'Consignes',");
+		javascript.append("		step: true,");
+		javascript.append("		color:'#FF7373',");
+		javascript.append("		lineWidth:3,");
 		javascript.append("		data: [");
 		for (ThermostatSetPoint thermostatState : thermostatStates) {
 			javascript.append("		[Date.UTC(");

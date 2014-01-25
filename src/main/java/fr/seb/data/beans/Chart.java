@@ -11,7 +11,9 @@ import fr.seb.entities.ThermostatSetPoint;
 public class Chart {
 	private Map<Sensor, List<TemperatureRecord>> plots;
 
-	private Collection<ThermostatSetPoint> thermostatStates;
+	private Collection<ThermostatSetPoint> thermostatSetPoints;
+
+	private Collection<ThermostatSetPoint> thermostatHeating;
 
 	public Map<Sensor, List<TemperatureRecord>> getPlots() {
 		return plots;
@@ -21,11 +23,19 @@ public class Chart {
 		this.plots = plots;
 	}
 
-	public Collection<ThermostatSetPoint> getThermostatStates() {
-		return thermostatStates;
+	public Collection<ThermostatSetPoint> getThermostatSetPoints() {
+		return thermostatSetPoints;
 	}
 
-	public void setThermostatStates(Collection<ThermostatSetPoint> thermostatStates) {
-		this.thermostatStates = thermostatStates;
+	public void setThermostatSetPoints(Collection<ThermostatSetPoint> thermostatSetPoints) {
+		this.thermostatSetPoints = thermostatSetPoints;
+	}
+
+	public Collection<ThermostatSetPoint> getThermostatHeating() {
+		return thermostatHeating;
+	}
+
+	public void setThermostatHeating(Collection<ThermostatSetPoint> thermostatHeating) {
+		this.thermostatHeating = thermostatHeating;
 	}
 }

@@ -33,5 +33,7 @@ public interface DataService {
 
 	List<ThermostatStatus> getLastYearThermostatStatus();
 
-	List<ThermostatSetPoint> filterEffectiveThermostatSetPoint(int lastUnit, int lastAmount);
+	List<ThermostatSetPoint> getThermostatSetPoint(int lastUnit, int lastAmount);
+
+	List<ThermostatSetPoint> getThermostatHeating(int lastUnit, int lastAmount);
 }

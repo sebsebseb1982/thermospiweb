@@ -53,8 +53,9 @@ public class Highcharts {
 
 	public Chart getTemperatureChart() {
 		Collection<TemperatureRecord> temperatures = dataService.getLastTemperatures(lastUnit, lastAmount);
-		Collection<ThermostatSetPoint> effectiveThermostatSetPoint = dataService.filterEffectiveThermostatSetPoint(lastUnit, lastAmount);
-		return coordinationTemperatures.getChartFromTemperature(temperatures, effectiveThermostatSetPoint);
+		Collection<ThermostatSetPoint> effectiveThermostatSetPoint = dataService.getThermostatSetPoint(lastUnit, lastAmount);
+		Collection<ThermostatSetPoint> effectiveThermostatHeating = dataService.getThermostatHeating(lastUnit, lastAmount);
+		return coordinationTemperatures.getChartFromTemperature(temperatures, effectiveThermostatSetPoint, effectiveThermostatHeating);
 	}
 
 	Object onActionFromOneDay() {

@@ -111,99 +111,115 @@ public class DataServiceImpl implements DataService {
 		return getLastThermostatStatus(Calendar.YEAR, 1);
 	}
 
-	public List<ThermostatSetPoint> filterEffectiveThermostatSetPoint(int lastUnit, int lastAmount) {
+	public List<ThermostatSetPoint> getThermostatSetPoint(int lastUnit, int lastAmount) {
 
 		List<ThermostatStatus> lastThermostatStatus = getEffectiveThermostatStatus(getLastThermostatStatus(lastUnit, lastAmount));
 
-		List<ThermostatSetPoint> lastThermostatSetPoint = getEffectiveThermostatSetPoint(getLastThermostatSetPoint(lastUnit, lastAmount), lastThermostatStatus);
+		List<ThermostatSetPoint> lastThermostatSetPoint = getEffectiveThermostatSetPoint(getLastThermostatSetPoint(lastUnit, lastAmount), lastThermostatStatus,
+				false);
+
+		return lastThermostatSetPoint;
+	}
+
+	public List<ThermostatSetPoint> getThermostatHeating(int lastUnit, int lastAmount) {
+		List<ThermostatStatus> lastThermostatStatus = getEffectiveThermostatStatus(getLastThermostatStatus(lastUnit, lastAmount));
+
+		List<ThermostatSetPoint> lastThermostatSetPoint = getEffectiveThermostatSetPoint(getLastThermostatSetPoint(lastUnit, lastAmount), lastThermostatStatus,
+				true);
 
 		return lastThermostatSetPoint;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ThermostatSetPoint> getEffectiveThermostatSetPoint(List<ThermostatSetPoint> thermostatSetPoints, List<ThermostatStatus> thermostatStatuses) {
+	private List<ThermostatSetPoint> getEffectiveThermostatSetPoint(List<ThermostatSetPoint> thermostatSetPoints, List<ThermostatStatus> thermostatStatuses,
+			boolean justHeating) {
 
-		List<ThermostatSetPoint> thermostatSetPointToRemove = new ArrayList<ThermostatSetPoint>();
-		List<ThermostatSetPoint> thermostatSetPointFakeBoundariesToAdd = new ArrayList<ThermostatSetPoint>();
+		for (int currentPriority = 3; currentPriority > (justHeating ? 0 : 1); currentPriority--) {
+			List<ThermostatSetPoint> thermostatSetPointToRemove = new ArrayList<ThermostatSetPoint>();
+			List<ThermostatSetPoint> thermostatSetPointFakeBoundariesToAdd = new ArrayList<ThermostatSetPoint>();
 
-		ThermostatStatus previousLowSignal = null;
+			ThermostatStatus previousLowSignal = null;
+			for (ThermostatStatus thermostatStatus : thermostatStatuses) {
+				if (thermostatStatus.getPriority() == currentPriority) {
+					// Si remontée, on doit supprimer les précédents état de
+					// priorité inférieure
+					if (thermostatStatus.isStatus()) {
+						// Si nous avons déja rencontré une descente
+						if (previousLowSignal != null) {
 
-		for (ThermostatStatus thermostatStatus : thermostatStatuses) {
-			// Si remontée, on doit supprimer les précédents état de
-			// priorité inférieure
-			if (thermostatStatus.isStatus()) {
-				// Si nous avons déja rencontré une descente
-				if (previousLowSignal != null) {
+							Predicate predicate = new fr.seb.predicates.setpoints.BetweenTwoDates(previousLowSignal.getDate(), thermostatStatus.getDate());
+							List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
 
-					Predicate predicate = new fr.seb.predicates.setpoints.BetweenTwoDates(previousLowSignal.getDate(), thermostatStatus.getDate());
-					List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
+							ThermostatSetPoint startBoundaries = new ThermostatSetPoint();
+							startBoundaries.setDate(previousLowSignal.getDate());
+							startBoundaries.setValue(0);
+							thermostatSetPointFakeBoundariesToAdd.add(startBoundaries);
 
+							if (!select.isEmpty()) {
+								ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
+								endBoundaries.setDate(thermostatStatus.getDate());
+								endBoundaries.setValue(select.get(select.size() - 1).getValue());
+								thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
+							} else {
+								ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
+								endBoundaries.setDate(thermostatStatus.getDate());
+								endBoundaries.setValue(getPreviousThermostatSetPoint(thermostatSetPoints, previousLowSignal.getDate()).getValue());
+								thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
+							}
+
+							thermostatSetPointToRemove.addAll(select);
+						} else {
+
+							Predicate predicate = new fr.seb.predicates.setpoints.BeforeDate(thermostatStatus.getDate());
+							List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
+
+							if (!select.isEmpty()) {
+								ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
+								endBoundaries.setDate(thermostatStatus.getDate());
+								endBoundaries.setValue(select.get(select.size() - 1).getValue());
+								thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
+							}
+
+							thermostatSetPointToRemove.addAll(select);
+						}
+
+						// On nettoie les bornes pour relancer l'algo
+						previousLowSignal = null;
+					}
+					// Sinon, on sauvegarde la descente en attendant la
+					// prochaine remontée
+					else {
+						previousLowSignal = thermostatStatus;
+					}
+				}
+
+			}
+			// Si nous n'avons pas trouvé l'état remontant
+			if (previousLowSignal != null) {
+
+				Predicate predicate = new fr.seb.predicates.setpoints.AfterDate(previousLowSignal.getDate());
+				List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
+
+				if (!select.isEmpty()) {
 					ThermostatSetPoint startBoundaries = new ThermostatSetPoint();
 					startBoundaries.setDate(previousLowSignal.getDate());
 					startBoundaries.setValue(0);
 					thermostatSetPointFakeBoundariesToAdd.add(startBoundaries);
 
-					if (!select.isEmpty()) {
-						ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
-						endBoundaries.setDate(thermostatStatus.getDate());
-						endBoundaries.setValue(select.get(select.size() - 1).getValue());
-						thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
-					} else {
-						ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
-						endBoundaries.setDate(thermostatStatus.getDate());
-						endBoundaries.setValue(getPreviousThermostatSetPoint(thermostatSetPoints, previousLowSignal.getDate()).getValue());
-						thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
-					}
-
-					thermostatSetPointToRemove.addAll(select);
-				} else {
-					Predicate predicate = new fr.seb.predicates.setpoints.BeforeDate(thermostatStatus.getDate());
-					List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
-
-					if (!select.isEmpty()) {
-						ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
-						endBoundaries.setDate(thermostatStatus.getDate());
-						endBoundaries.setValue(select.get(select.size() - 1).getValue());
-						thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
-					}
-
-					thermostatSetPointToRemove.addAll(select);
+					ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
+					endBoundaries.setDate(new Date());
+					endBoundaries.setValue(0);
+					thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
 				}
 
-				// On nettoie les bornes pour relancer l'algo
-				previousLowSignal = null;
+				thermostatSetPointToRemove.addAll(select);
 			}
-			// Sinon, on sauvegarde la descente en attendant la
-			// prochaine remontée
-			else {
-				previousLowSignal = thermostatStatus;
-			}
+
+			thermostatSetPoints.removeAll(thermostatSetPointToRemove);
+			thermostatSetPoints.addAll(thermostatSetPointFakeBoundariesToAdd);
+
+			Collections.sort(thermostatSetPoints);
 		}
-
-		// Si nous n'avons pas trouvé l'état remontant
-		if (previousLowSignal != null) {
-			Predicate predicate = new fr.seb.predicates.setpoints.AfterDate(previousLowSignal.getDate());
-			List<ThermostatSetPoint> select = (List<ThermostatSetPoint>) CollectionUtils.select(thermostatSetPoints, predicate);
-
-			if (!select.isEmpty()) {
-				ThermostatSetPoint startBoundaries = new ThermostatSetPoint();
-				startBoundaries.setDate(previousLowSignal.getDate());
-				startBoundaries.setValue(0);
-				thermostatSetPointFakeBoundariesToAdd.add(startBoundaries);
-
-				ThermostatSetPoint endBoundaries = new ThermostatSetPoint();
-				endBoundaries.setDate(new Date());
-				endBoundaries.setValue(0);
-				thermostatSetPointFakeBoundariesToAdd.add(endBoundaries);
-			}
-
-			thermostatSetPointToRemove.addAll(select);
-		}
-
-		thermostatSetPoints.removeAll(thermostatSetPointToRemove);
-		thermostatSetPoints.addAll(thermostatSetPointFakeBoundariesToAdd);
-
-		Collections.sort(thermostatSetPoints);
 
 		return thermostatSetPoints;
 	}
@@ -230,6 +246,7 @@ public class DataServiceImpl implements DataService {
 		List<ThermostatStatus> thermostatStatusesToRemove = new ArrayList<ThermostatStatus>();
 
 		for (int currentPriority = 3; currentPriority > 1; currentPriority--) {
+
 			ThermostatStatus previousLowSignal = null;
 
 			for (ThermostatStatus thermostatStatus : thermostatStatuses) {
@@ -268,12 +285,6 @@ public class DataServiceImpl implements DataService {
 		thermostatStatuses.removeAll(thermostatStatusesToRemove);
 
 		return thermostatStatuses;
-	}
-
-	private void titre(String titre) {
-		System.out.println("-------------------------------------------------------------------------");
-		System.out.println(titre);
-		System.out.println("-------------------------------------------------------------------------");
 	}
 
 }

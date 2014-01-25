@@ -51,7 +51,7 @@ public class Index {
 		@SuppressWarnings("unchecked")
 		List<ThermostatSetPoint> thermostatStates = session.createCriteria(ThermostatSetPoint.class).list();
 
-		chart.setThermostatStates(new ArrayList<ThermostatSetPoint>(thermostatStates));
+		chart.setThermostatSetPoints(new ArrayList<ThermostatSetPoint>(thermostatStates));
 
 		return chart;
 	}

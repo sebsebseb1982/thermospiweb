@@ -14,7 +14,8 @@ import fr.seb.entities.ThermostatSetPoint;
 
 public class CoordinationTemperaturesImpl implements CoordinationTemperatures {
 
-	public Chart getChartFromTemperature(Collection<TemperatureRecord> temperatures, Collection<ThermostatSetPoint> thermostatSetPoints) {
+	public Chart getChartFromTemperature(Collection<TemperatureRecord> temperatures, Collection<ThermostatSetPoint> thermostatSetPoints,
+			Collection<ThermostatSetPoint> thermostatHeating) {
 
 		Chart chart = new Chart();
 
@@ -34,7 +35,8 @@ public class CoordinationTemperaturesImpl implements CoordinationTemperatures {
 
 		chart.setPlots(plots);
 
-		chart.setThermostatStates(thermostatSetPoints);
+		chart.setThermostatSetPoints(thermostatSetPoints);
+		chart.setThermostatHeating(thermostatHeating);
 
 		return chart;
 	}
