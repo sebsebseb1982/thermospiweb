@@ -45,6 +45,7 @@ public class TemperatureChart {
 		javascript.append("var chart1 = new Highcharts.Chart({");
 		javascript.append("		chart: {");
 		javascript.append("			renderTo: '").append(id).append("',");
+		javascript.append("			height: 600,");
 		javascript.append("			type: 'line'");
 		javascript.append("		},");
 		javascript.append("		rangeSelector: {");
